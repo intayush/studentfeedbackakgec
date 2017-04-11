@@ -20,4 +20,7 @@ $(document).ready(function(){
   $('select').material_select();
 });
   </script>
+  <style type="text/css">
+  .prmodal {max-height: 70% !important }
+  </style>
 </head>

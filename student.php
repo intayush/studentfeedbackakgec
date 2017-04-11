@@ -104,9 +104,9 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
             }
 
 						echo '
-						<div id="modal'.$modal_no_theory.'" class="modal modal-fixed-footer">
+						<div id="theory'.$modal_no_theory.'" class="modal bottom-sheet prmodal">
 							<div class="modal-content">
-
+              <div class="container">
                 <div class="row">
 
                   <div class="col s6 m6">
@@ -195,9 +195,9 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
      $qid = $disp_ques2['id'];
       echo '
       <div class="row">
-      <div class="col s10 m10">'.$number.' '.$disp_question.'</div>
+      <div class="col s9 m9">'.$number.' '.$disp_question.'</div>
 
-			<div class="col s2 m2">
+			<div class="col s3 m3">
 				<p>
 					<input name="'.$modal_no_theory.'tq'.$qid.'" type="checkbox" id="'.$modal_no_theory.$qid.'b">
           <label for="'.$modal_no_theory.$qid.'b"></label>
@@ -212,6 +212,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 							<div class="modal-footer">
 								<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
 							</div>
+              </div>
 						</div>
 						';
 				 }
@@ -241,6 +242,130 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
  						$l="l".$i;
  						array_push($practical_fac_2,$fac_2);
 					$no_of_practical++;
+          $modal_no_practical = $no_of_practical-1;
+
+          $ques = "select * from theory_questions where part='a'";//Fetch Part A Questions
+          if(!($qu=mysqli_query($con,$ques))){
+            echo mysqli_error($con);
+            die();
+          }
+          $ques2 = "select * from theory_questions where part='b'";//Fetch Part B Questions
+          if(!($qu2=mysqli_query($con,$ques2))){
+            echo mysqli_error($con);
+            die();
+          }
+
+          echo '
+          <div id="practical'.$modal_no_practical.'" class="modal bottom-sheet prmodal">
+            <div class="modal-content">
+            <div class="container">
+              <div class="row">
+
+                <div class="col s6 m6">
+                <div class="col s12 m12">
+                  Name:<div class="right">'.ucwords($row["name"]).'</div>
+                </div>
+                <div class="col s12 m12">
+                  Department:<div class="right">'.strtoupper($fac["department"]).'</div>
+                </div>
+                <div class="col s12 m12">
+                  Name of faculties:<div class="right">'.ucwords($fac_1["name"]).'&'.ucwords($fac_2["name"]).'</div>
+                </div>
+                <div class="col s12 m12">
+                  Subject Code:<div class="right">'.strtoupper($practical[$code]).'</div>
+                </div>
+                </div>
+
+                <div class="col s6 m6">
+                <div class="col s12 m12">
+                Subject Name:<div class="right">'.strtoupper($practical[$code]).'</div>
+                </div>
+                <div class="col s12 m12">
+                Branch/Year:<div class="right">'.$branch.'&nbsp;'.$row["year"].'</div>
+                </div>
+                <div class="col s12 m12">
+                Section:<div class="right">'.strtoupper($row["section"]).'</div>
+                </div>
+                <div class="col s12 m12">
+                Date:<div class="right">'.$date.'</div>
+                </div>
+                </div>
+
+              </div>
+
+  <div class="row">
+    <div class="col s12 m12"><h5>Part-A</h5></div>
+    <div class="col s12 m12"><blockquote>Please indicate your assessment on a scale of 1 to 5. 5 is the best.</blockquote></div>
+  </div>';
+ while($disp_ques  = mysqli_fetch_assoc($qu)){
+   $disp_question = $disp_ques['question'];
+   $qid = $disp_ques['id'];
+    echo '
+    <div class="row">
+    <div class="col s6 m6">'.$qid.'. '.$disp_question.'</div>
+
+    <div class="col s3 m3">
+    <select name="'.$modal_no_practical.'pq'.$qid.'f-1">
+      <option value="" disabled selected>Choose your option</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+    </select>
+    <label>Choose Your Option</label>
+    </div>
+    <div class="col s3 m3">
+    <select name="'.$modal_no_practical.'pq'.$qid.'f-1">
+      <option value="" disabled selected>Choose your option</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+    </select>
+    <label>Choose Your Option</label>
+    </div>
+    </div><br>';
+  }
+
+  echo '<div class="row">
+    <div class="col s12 m12"><h5>Lab Assistant Feedback</h5></div>
+    <div class="col s12 m12"><blockquote>Please indicate your assessment on a scale of 1 to 5. 5 is the best.</blockquote></div>
+  </div>';
+  $number=1;
+ while($disp_ques2  = mysqli_fetch_assoc($qu2)){
+   $disp_question = $disp_ques2['question'];
+   $qid = $disp_ques2['id'];
+    echo '
+    <div class="row">
+    <div class="col s8 m8">'.$number.' '.$disp_question.'</div>
+
+    <div class="col s4 m4">
+      <p>
+      <select name="'.$modal_no_practical.'pq'.$qid.'f-1">
+        <option value="" disabled selected>Choose your option</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+      <label>Choose Your Option</label>
+      </p>
+    </div>
+    </div><br>';
+    $number++;
+  }
+
+  echo'
+  </div>
+            <div class="modal-footer">
+              <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+            </div>
+          </div>
+          ';
 				}
 				 $i++;
 			}
@@ -255,7 +380,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 	<div class="row">';
 	$j=0;
 	foreach ($subject as $key => $value) {
-		echo'<div class="col s2 m2"><a class="waves-effect waves-light btn red lighten-1" href="#modal'.$j.'">'.$value.'</a></div>';
+		echo'<div class="col s2 m2"><a class="waves-effect waves-light btn red lighten-1" href="#theory'.$j.'">'.$value.'</a></div>';
 		$j++;
 	}
 	echo '</div>';
@@ -268,9 +393,10 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 </div>
 </div>
 </div>
-<div class="row">';
+<div class="row">';$j=0;
 foreach ($practical_sub as $key => $value) {
-echo'<div class="col s2 m2"><a class="waves-effect waves-light btn red lighten-1">'.$value.'</a></div>';
+echo'<div class="col s2 m2"><a class="waves-effect waves-light btn red lighten-1" href="#practical'.$j.'">'.$value.'</a></div>';
+$j++;
 }
 echo '</div>';
 ?>
