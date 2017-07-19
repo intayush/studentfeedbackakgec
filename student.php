@@ -91,7 +91,6 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 						array_push($subject,$theory[$th]);
 						array_push($faculty,$fac);
 						$modal_no_theory=$no_of_theory-1;
-
             $ques = "select * from theory_questions where part='a'";//Fetch Part A Questions
             if(!($qu=mysqli_query($con,$ques))){
               echo mysqli_error($con);
@@ -144,7 +143,13 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 		<div class="row">
 			<div class="col s12 m12"><h5>Part-A</h5></div>
 			<div class="col s12 m12"><blockquote>Please indicate your assessment on a scale of 1 to 5. 5 is the best.</blockquote></div>
-		</div>';
+		</div>
+    <form action="theory_response.php" method="post" id="fac-'.$fac["id"].'-sub-'.$theory[$th].'-'.$row["section"].'-'.$row["year"].'-form">
+    <input type="hidden" name="facultyid" value="'.$fac["id"].'">
+    <input type="hidden" name="subject" value="'.$theory[$th].'">
+    <input type="hidden" name="year" value="'.$row["year"].'">
+    <input type="hidden" name="section" value="'.$row["section"].'">
+    <input type="hidden" name="studentid" value="'.$row["id"].'">';
    while($disp_ques  = mysqli_fetch_assoc($qu)){
      $disp_question = $disp_ques['question'];
      $qid = $disp_ques['id'];
@@ -154,31 +159,31 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 
 			<div class="col s1 m1">
 				<p>
-					<input name="'.$modal_no_theory.'tq'.$qid.'" type="radio" value="1" id="'.$modal_no_theory.$qid.'1"/>
+					<input name="tq'.$qid.'" type="radio" value="1" id="'.$modal_no_theory.$qid.'1"/>
 					<label for="'.$modal_no_theory.$qid.'1">1</label>
 				</p>
 			</div>
 			<div class="col s1 m1">
 				<p>
-        <input name="'.$modal_no_theory.'tq'.$qid.'" type="radio" value="2" id="'.$modal_no_theory.$qid.'2"/>
+        <input name="tq'.$qid.'" type="radio" value="2" id="'.$modal_no_theory.$qid.'2"/>
         <label for="'.$modal_no_theory.$qid.'2">2</label>
 				</p>
 			</div>
 			<div class="col s1 m1">
 				<p>
-        <input name="'.$modal_no_theory.'tq'.$qid.'" type="radio" value="3" id="'.$modal_no_theory.$qid.'3"/>
+        <input name="tq'.$qid.'" type="radio" value="3" id="'.$modal_no_theory.$qid.'3"/>
         <label for="'.$modal_no_theory.$qid.'3">3</label>
 				</p>
 			</div>
 			<div class="col s1 m1">
 				<p>
-        <input name="'.$modal_no_theory.'tq'.$qid.'" type="radio" value="4" id="'.$modal_no_theory.$qid.'4"/>
+        <input name="tq'.$qid.'" type="radio" value="4" id="'.$modal_no_theory.$qid.'4"/>
         <label for="'.$modal_no_theory.$qid.'4">4</label>
 				</p>
 			</div>
 			<div class="col s1 m1">
 				<p>
-        <input name="'.$modal_no_theory.'tq'.$qid.'" type="radio" value="5" id="'.$modal_no_theory.$qid.'5"/>
+        <input name="tq'.$qid.'" type="radio" value="5" id="'.$modal_no_theory.$qid.'5"/>
         <label for="'.$modal_no_theory.$qid.'5">5</label>
 				</p>
 			</div>
@@ -199,19 +204,19 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 
 			<div class="col s3 m3">
 				<p>
-					<input name="'.$modal_no_theory.'tq'.$qid.'" type="checkbox" id="'.$modal_no_theory.$qid.'b">
+					<input name="tq'.$qid.'" type="checkbox" id="'.$modal_no_theory.$qid.'b">
           <label for="'.$modal_no_theory.$qid.'b"></label>
 				</p>
 			</div>
 			</div><br>';
       $number++;
     }
-
     echo'
 		</div>
 							<div class="modal-footer">
-								<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+								<a id="fac-'.$fac["id"].'-sub-'.$theory[$th].'-'.$row["section"].'-'.$row["year"].'" class="modal-action modal-close waves-effect waves-green btn-flat theory-form-submit" href="#">Submit</a>
 							</div>
+              </form>
               </div>
 						</div>
 						';
@@ -244,12 +249,12 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 					$no_of_practical++;
           $modal_no_practical = $no_of_practical-1;
 
-          $ques = "select * from theory_questions where part='a'";//Fetch Part A Questions
+          $ques = "select * from practical_questions where part='a'";//Fetch Part A Questions
           if(!($qu=mysqli_query($con,$ques))){
             echo mysqli_error($con);
             die();
           }
-          $ques2 = "select * from theory_questions where part='b'";//Fetch Part B Questions
+          $ques2 = "select * from practical_questions where part='b'";//Fetch Part B Questions
           if(!($qu2=mysqli_query($con,$ques2))){
             echo mysqli_error($con);
             die();
@@ -294,9 +299,16 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
               </div>
 
   <div class="row">
-    <div class="col s12 m12"><h5>Part-A</h5></div>
+    <div class="col s12 m12"><h5>Faculty Feedback</h5></div>
     <div class="col s12 m12"><blockquote>Please indicate your assessment on a scale of 1 to 5. 5 is the best.</blockquote></div>
-  </div>';
+  </div>
+  <form action="practical_response.php" method="post" id="fac1-'.$fac_1["id"].'-fac2-'.$fac_2["id"].'-la-1-sub-'.$theory[$th].'-'.$row["section"].'-'.$row["year"].'-form">
+  <input type="hidden" name="faculty_1_id" value="'.$fac_1["id"].'">
+  <input type="hidden" name="faculty_2_id" value="'.$fac_2["id"].'">
+  <input type="hidden" name="studentid" value="'.$row["id"].'">
+  <input type="hidden" name="section" value="'.$row["section"].'">
+  <input type="hidden" name="subject" value="'.$practical[$code].'">
+  <input type="hidden" name="year" value="'.$row["year"].'">';
  while($disp_ques  = mysqli_fetch_assoc($qu)){
    $disp_question = $disp_ques['question'];
    $qid = $disp_ques['id'];
@@ -305,7 +317,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
     <div class="col s6 m6">'.$qid.'. '.$disp_question.'</div>
 
     <div class="col s3 m3">
-    <select name="'.$modal_no_practical.'pq'.$qid.'f-1">
+    <select name="pq-'.$qid.'-f-1">
       <option value="" disabled selected>Choose your option</option>
       <option value="1">1</option>
       <option value="2">2</option>
@@ -316,7 +328,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
     <label>Choose Your Option</label>
     </div>
     <div class="col s3 m3">
-    <select name="'.$modal_no_practical.'pq'.$qid.'f-1">
+    <select name="pq-'.$qid.'-f-2">
       <option value="" disabled selected>Choose your option</option>
       <option value="1">1</option>
       <option value="2">2</option>
@@ -343,7 +355,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 
     <div class="col s4 m4">
       <p>
-      <select name="'.$modal_no_practical.'pq'.$qid.'f-1">
+      <select name="pq'.$qid.'-la">
         <option value="" disabled selected>Choose your option</option>
         <option value="1">1</option>
         <option value="2">2</option>
@@ -361,8 +373,9 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
   echo'
   </div>
             <div class="modal-footer">
-              <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+              <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat practical-form-submit" id="fac1-'.$fac_1["id"].'-fac2-'.$fac_2["id"].'-la-1-sub-'.$theory[$th].'-'.$row["section"].'-'.$row["year"].'">Agree</a>
             </div>
+            </form>
             </div>
           </div>
           ';
@@ -380,7 +393,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 	<div class="row">';
 	$j=0;
 	foreach ($subject as $key => $value) {
-		echo'<div class="col s2 m2"><a class="waves-effect waves-light btn red lighten-1" href="#theory'.$j.'">'.$value.'</a></div>';
+		echo'<div class="col s2 m2"><a class="waves-effect waves-light btn red lighten-1 modal-button" href="#theory'.$j.'" id="theory-button-'.$j.'">'.$value.'</a></div>';
 		$j++;
 	}
 	echo '</div>';
@@ -395,10 +408,45 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 </div>
 <div class="row">';$j=0;
 foreach ($practical_sub as $key => $value) {
-echo'<div class="col s2 m2"><a class="waves-effect waves-light btn red lighten-1" href="#practical'.$j.'">'.$value.'</a></div>';
+echo'<div class="col s2 m2"><a class="waves-effect waves-light btn red lighten-1 modal-button" href="#practical'.$j.'" id="practical-button-'.$j.'">'.$value.'</a></div>';
 $j++;
 }
 echo '</div>';
 ?>
 			</div>
+      <script type="text/javascript">
+      $("body").on("contextmenu",function(e){
+          return false;
+      });
+      window.modalButton='';
+      $('.modal-button').click(function(){
+        window.modalButton = $(this).attr('id');
+      })
+        $('.theory-form-submit').click(function(){
+          var formid = $(this).attr('id')+'-form';
+          $.ajax({
+            type: 'post',
+            url: 'theory_response.php',
+            data: $('#'+formid).serialize(),
+            success: function (result) {
+              console.log(result);
+              $('#'+window.modalButton).addClass('disabled');
+            }
+          });
+
+        });
+        $('.practical-form-submit').click(function(){
+          var formid = $(this).attr('id')+'-form';
+          $.ajax({
+            type: 'post',
+            url: 'practical_response.php',
+            data: $('#'+formid).serialize(),
+            success: function (result) {
+              console.log(result);
+              $('#'+window.modalButton).addClass('disabled');
+            }
+          });
+
+        });
+      </script>
      </body>
