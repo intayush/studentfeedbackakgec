@@ -73,13 +73,31 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 		$practical = mysqli_fetch_assoc($p);
 		$i=1;$no_of_theory=0;$no_of_practical=0;
 		$subject=array();
+    $subject['name'] = array();
+    $subject['disabled'] = array();
 		$faculty=array();
 		$practical_sub=array();
+    $practical_sub['name'] = array();
+    $practical_sub['disabled'] = array();
 		$practical_fac_1=array();
 		$practical_fac_2=array();
+    $stuid = $row['id'];
 			while($i<=7){
 				 $code="f".$i;	//faculty f1 f2 f3....
 				 if($theory[$code]!=3){ //if fac not null
+           $th="t".$i;
+           $check_response = "select * from theory_response where subject='$theory[$th]' and student_id = '$stuid'";
+           if(!($cr=mysqli_query($con,$check_response))){
+						 echo mysqli_error($con);
+						 die();
+					 }
+           if(mysqli_num_rows($cr)){
+             $i++;
+             array_push($subject['name'],$theory[$th]);
+             array_push($subject['disabled'],true);
+             $no_of_theory++;
+             continue;
+           }
 					 $fac_sql = "select * from faculty where id = '$theory[$code]'"; //get faculty details
 					 if(!($fa=mysqli_query($con,$fac_sql))){
 						 echo mysqli_error($con);
@@ -87,8 +105,9 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 					 }
 					$fac  = mysqli_fetch_assoc($fa);
 						$no_of_theory++;
-						$th="t".$i;
-						array_push($subject,$theory[$th]);
+						//array_push($subject,$theory[$th]);
+            array_push($subject['name'],$theory[$th]);
+            array_push($subject['disabled'],false);
 						array_push($faculty,$fac);
 						$modal_no_theory=$no_of_theory-1;
             $ques = "select * from theory_questions where part='a'";//Fetch Part A Questions
@@ -226,7 +245,20 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 			$i=1;
 			while($i<=4){
 				 $code="l".$i;	//lab l1 l2 l3....
+         $l="l".$i;
 				 if($practical[$code]!=''){ //if lab not null
+           $check_response = "select * from practical_faculty_response where student_id = '$stuid' and subject = '$practical[$code]'";
+           if(!($cr=mysqli_query($con,$check_response))){
+						 echo mysqli_error($con);
+						 die();
+					 }
+           if(mysqli_num_rows($cr)){
+             $i++;
+             array_push($practical_sub['name'],$practical[$l]);
+             array_push($practical_sub['disabled'],true);
+             $no_of_practical++;
+             continue;
+           }
 					 $fac_1_code = "f".$i.'1';
 					 $fac_2_code = "f".$i.'2';
 					 $fac_1_sql = "select * from faculty where id = '$practical[$fac_1_code]'"; //get faculty 1 details
@@ -235,8 +267,9 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 						 die();
 					 }
 					$fac_1 = mysqli_fetch_assoc($fa_1);
-						$l="l".$i;
 						array_push($practical_sub,$practical[$l]);
+            array_push($practical_sub['name'],$practical[$l]);
+            array_push($practical_sub['disabled'],false);
 						array_push($practical_fac_1,$fac_1);
 						$fac_2_sql = "select * from faculty where id = '$practical[$fac_2_code]'"; //get faculty 2 details
  					 if(!($fa_2=mysqli_query($con,$fac_2_sql))){
@@ -271,7 +304,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
                   Name:<div class="right">'.ucwords($row["name"]).'</div>
                 </div>
                 <div class="col s12 m12">
-                  Department:<div class="right">'.strtoupper($fac["department"]).'</div>
+                  Department:<div class="right">'.strtoupper($fac_1["department"]).'</div>
                 </div>
                 <div class="col s12 m12">
                   Name of faculties:<div class="right">'.ucwords($fac_1["name"]).'&'.ucwords($fac_2["name"]).'</div>
@@ -392,8 +425,12 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 	</div>
 	<div class="row">';
 	$j=0;
-	foreach ($subject as $key => $value) {
+	foreach ($subject['name'] as $key => $value) {
+    if(!$subject['disabled'][$j]){
 		echo'<div class="col s2 m2"><a class="waves-effect waves-light btn red lighten-1 modal-button" href="#theory'.$j.'" id="theory-button-'.$j.'">'.$value.'</a></div>';
+  }else{
+    echo'<div class="col s2 m2"><a class="waves-effect waves-light btn red lighten-1 modal-button disabled" href="#theory'.$j.'" id="theory-button-'.$j.'">'.$value.'</a></div>';
+  }
 		$j++;
 	}
 	echo '</div>';
@@ -407,8 +444,12 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 </div>
 </div>
 <div class="row">';$j=0;
-foreach ($practical_sub as $key => $value) {
-echo'<div class="col s2 m2"><a class="waves-effect waves-light btn red lighten-1 modal-button" href="#practical'.$j.'" id="practical-button-'.$j.'">'.$value.'</a></div>';
+foreach ($practical_sub['name'] as $key => $value) {
+  if(!$practical_sub['disabled'][$j]){
+    echo'<div class="col s2 m2"><a class="waves-effect waves-light btn red lighten-1 modal-button" href="#practical'.$j.'" id="practical-button-'.$j.'">'.$value.'</a></div>';
+  }else{
+    echo'<div class="col s2 m2"><a class="waves-effect waves-light btn red lighten-1 modal-button disabled" href="#practical'.$j.'" id="practical-button-'.$j.'">'.$value.'</a></div>';
+  }
 $j++;
 }
 echo '</div>';
