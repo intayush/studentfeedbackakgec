@@ -1,6 +1,6 @@
 <?php
 $username = 'root';
-$password = 'root';
+$password = 'mysqlroot';
 $host = '127.0.0.1';
 $database = 'feedback';
 $con = mysqli_connect($host,$username,$password,$database);
