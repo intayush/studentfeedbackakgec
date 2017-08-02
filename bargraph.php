@@ -1,81 +1,11 @@
 <?php
 include_once 'header.php';
 ?>
-<script>
-    $(document).ready(function() {
-
-        $("#department").change(function () {
-            var department = $("#department").val();
-            $.ajax({
-                url: "getfac.php",
-                data: {dpt: department},
-                success: function (json) {
-
-                    $.each(json, function (i, obj) {
-                        $('#faculty').append($('<option>', {
-                            value: obj.id,
-                            text : obj.name
-                        }));
-
-                    });
-                    $('select').material_select();
-                }
-
-            });
-        });
-
-        $("#faculty").change(function () {
-
-            var fac = $("#faculty").val();
-            $.ajax({
-                url: "getsub.php",
-                data: {fac: fac},
-                success: function (json) {
-
-                    $.each(json, function (i, obj) {
-                        $('#subject').append($('<option>', {
-                            value: obj.subject,
-                            text : obj.subject
-                        }));
-
-                    });
-                    $('select').material_select();
-                }
-
-            });
-        });
-
-
-        $("#subject").change(function () {
-
-            var sub = $("#subject").val();
-            var fac = $("#faculty").val();
-            $.ajax({
-                url: "getsec.php",
-                data: {fac: fac, sub: sub},
-                success: function (json) {
-
-                    $.each(json, function (i, obj) {
-                        $('#section').append($('<option>', {
-                            value: obj.section,
-                            text : obj.section
-                        }));
-
-                    });
-                    $('select').material_select();
-                }
-
-            });
-        });
-
-
-
-    });
-</script>
 <body>
-<div id="OK">
 
-</div>
+
+
+
     <nav class="teal lighten-3">
       <div class="nav-wrapper">
         <a href="#" class="brand-logo center">Feedback Report (Bargraph)</a>
@@ -88,59 +18,231 @@ include_once 'header.php';
     <div class="container">
         <div class="container">
             <div class="container">
-                <div class="row">
-                    <form class="col s12">
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <?php
-                                $qry1="SELECT DISTINCT department FROM faculty";
-                                $result1=mysqli_query($con, $qry1);
-                                ?>
-                                <select id="department">
-                                    <option value="" disabled selected>Select Branch</option>
-                                    <?php
-                                    while ($department=mysqli_fetch_assoc($result1))
-                                    {
-                                        ?>
-                                        <option><?php echo $department['department']; ?></option>
 
+                <form method="post" action="#">
+                    <div class="row">
+                            <div class="row">
+                                <div class="input-field col s12">
                                     <?php
-                                    }
+                                    $qry1="SELECT DISTINCT department FROM faculty";
+                                    $result1=mysqli_query($con, $qry1);
                                     ?>
-                                </select>
+                                    <select id="department" name="department" required>
+                                        <option value="" disabled selected>Select Branch</option>
+                                        <?php
+                                        while ($department=mysqli_fetch_assoc($result1))
+                                        {
+                                            ?>
+                                            <option><?php echo $department['department']; ?></option>
+
+                                            <?php
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class='input-field col s12'>
-                                <select id="faculty">
-                                    <option value="" disabled selected>Select Faculty</option>
-                                </select>
+                            <div class="row">
+                                <div class='input-field col s12'>
+                                    <select id="faculty" name="faculty" required>
+                                        <option value="" disabled selected>Select Faculty</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <select id="subject" name="subject" required>
+                                        <option value="" disabled selected>Select Subject</option>
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <select id="section" name="section" required>
+                                        <option value="" disabled selected>Select Section</option>
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12 center">
+                                    <button type="submit" name="sub" class="waves-effect waves-light btn red">button</button>
+                                </div>
                             </div>
 
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <select id="subject">
-                                    <option value="" disabled selected>Select Subject</option>
-
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <select id="section">
-                                    <option value="" disabled selected>Select Section</option>
-
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12 center">
-                                <a class="waves-effect waves-light btn red">button</a>
-                            </div>
-                        </div>
 
 
+                    </div>
+                </form>
+                <?php
+                if (isset($_POST['sub']))
+                {
+                    $section=$_POST['section'];
+                    $department=$_POST['department'];
+                    $facalty_id=$_POST['faculty'];
+                    $subject=$_POST['subject'];
 
-                </div>
+                    $qry1="SELECT * FROM theory_response WHERE faculty_id='$facalty_id' AND subject='$subject' AND section='$section'";
+                    $result1=mysqli_query($con, $qry1);
+                    $arr=[0,0,0,0,0];
+                    $count=0;
+                    while ($data=mysqli_fetch_assoc($result1))
+                    {
+                        $arr[0]=$arr[0]+$data['q1'];
+                        $arr[1]=$arr[1]+$data['q2'];
+                        $arr[2]=$arr[2]+$data['q3'];
+                        $arr[3]=$arr[3]+$data['q4'];
+                        $arr[4]=$arr[4]+$data['q5'];
+                        $count++;
+
+                    }
+                    for($i=0;$i<5;$i++)
+                    {
+                        $arr[$i]=$arr[$i]/$count;
+                    }
+
+
+
+
+
+
+                    ?>
+                    <canvas id="myChart" width="400" height="400"></canvas>
+                    <script>
+
+                        function generateGraph() {
+
+                            var ctx = document.getElementById("myChart");
+                            var myChart = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: ["Qus-1", "Qus-2", "Qus-3", "Qus-4", "Qus-5"],
+                                    datasets: [{
+                                        label: 'Qus Average #',
+                                         data: ['<?php echo $arr[0];?>','<?php echo $arr[1];?>','<?php echo $arr[2];?>','<?php echo $arr[3];?>','<?php echo $arr[4];?>'],
+//                                        data: ['10','20','15','20','30'],
+                                        backgroundColor: [
+                                            'rgba(255, 99, 132, 0.2)',
+                                            'rgba(54, 162, 235, 0.2)',
+                                            'rgba(255, 206, 86, 0.2)',
+                                            'rgba(75, 192, 192, 0.2)',
+                                            'rgba(153, 102, 255, 0.2)'
+
+                                        ],
+                                        borderColor: [
+                                            'rgba(255,99,132,1)',
+                                            'rgba(54, 162, 235, 1)',
+                                            'rgba(255, 206, 86, 1)',
+                                            'rgba(75, 192, 192, 1)',
+                                            'rgba(153, 102, 255, 1)'
+                                        ],
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    scales: {
+                                        yAxes: [{
+                                            ticks: {
+                                                beginAtZero:true
+                                            }
+                                        }]
+                                    }
+                                }
+                            });
+
+                        }
+
+                        generateGraph();
+
+
+                    </script>
+
+                    <?php
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.facid='<?php echo $facalty_id;?>';
+
+
+        $(document).ready(function() {
+
+
+
+
+            $("#department").change(function () {
+                var department = $("#department").val();
+                $.ajax({
+                    url: "getfac.php",
+                    data: {dpt: department},
+                    success: function (json) {
+
+                        $.each(json, function (i, obj) {
+                            $('#faculty').append($('<option>', {
+                                value: obj.id,
+                                text : obj.name
+                            }));
+
+                        });
+                        $('select').material_select();
+                    }
+
+                });
+            });
+
+            $("#faculty").change(function () {
+
+                var fac = $("#faculty").val();
+                $.ajax({
+                    url: "getsub.php",
+                    data: {fac: fac},
+                    success: function (json) {
+
+                        $.each(json, function (i, obj) {
+                            $('#subject').append($('<option>', {
+                                value: obj.subject,
+                                text : obj.subject
+                            }));
+
+                        });
+                        $('select').material_select();
+                    }
+
+                });
+            });
+
+
+            $("#subject").change(function () {
+
+                var sub = $("#subject").val();
+                var fac = $("#faculty").val();
+                $.ajax({
+                    url: "getsec.php",
+                    data: {fac: fac, sub: sub},
+                    success: function (json) {
+
+                        $.each(json, function (i, obj) {
+                            $('#section').append($('<option>', {
+                                value: obj.section,
+                                text : obj.section
+                            }));
+
+                        });
+                        $('select').material_select();
+                    }
+
+                });
+            });
+
+
+
+        });
+    </script>
+
 </body>
+
+
