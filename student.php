@@ -84,7 +84,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
     $stuid = $row['id'];
 			while($i<=7){
 				 $code="f".$i;	//faculty f1 f2 f3....
-				 if($theory[$code]!=3){ //if fac not null
+				 if($theory[$code]!=null){ //if fac not null
            $th="t".$i;
            $check_response = "select * from theory_response where subject='$theory[$th]' and student_id = '$stuid'";
            if(!($cr=mysqli_query($con,$check_response))){
@@ -261,6 +261,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
            }
 					 $fac_1_code = "f".$i.'1';
 					 $fac_2_code = "f".$i.'2';
+           $la_code = "la".$i;
 					 $fac_1_sql = "select * from faculty where id = '$practical[$fac_1_code]'"; //get faculty 1 details
 					 if(!($fa_1=mysqli_query($con,$fac_1_sql))){
 						 echo mysqli_error($con);
@@ -281,7 +282,12 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
  						array_push($practical_fac_2,$fac_2);
 					$no_of_practical++;
           $modal_no_practical = $no_of_practical-1;
-
+          $la_sql = "select * from lab_assistant where id='$practical[$la_code]'";
+          if(!($la=mysqli_query($con,$la_sql))){
+            echo mysqli_error($con);
+            die();
+          }
+         $la = mysqli_fetch_assoc($la);
           $ques = "select * from practical_questions where part='a'";//Fetch Part A Questions
           if(!($qu=mysqli_query($con,$ques))){
             echo mysqli_error($con);
@@ -307,10 +313,10 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
                   Department:<div class="right">'.strtoupper($fac_1["department"]).'</div>
                 </div>
                 <div class="col s12 m12">
-                  Name of faculties:<div class="right">'.ucwords($fac_1["name"]).'&'.ucwords($fac_2["name"]).'</div>
+                  Subject Code:<div class="right">'.strtoupper($practical[$code]).'</div>
                 </div>
                 <div class="col s12 m12">
-                  Subject Code:<div class="right">'.strtoupper($practical[$code]).'</div>
+                Date:<div class="right">'.$date.'</div>
                 </div>
                 </div>
 
@@ -324,9 +330,12 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
                 <div class="col s12 m12">
                 Section:<div class="right">'.strtoupper($row["section"]).'</div>
                 </div>
-                <div class="col s12 m12">
-                Date:<div class="right">'.$date.'</div>
                 </div>
+                <div class="col s12 m12">
+                  Name of faculties:<div class="right">'.ucwords($fac_1["name"]).' & '.ucwords($fac_2["name"]).'</div>
+                </div>
+                <div class="col s12 m12">
+                  Name of lab assistant:<div class="right">'.ucwords($la["name"]).'</div>
                 </div>
 
               </div>
@@ -338,6 +347,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
   <form action="practical_response.php" method="post" id="fac1-'.$fac_1["id"].'-fac2-'.$fac_2["id"].'-la-1-sub-'.$theory[$th].'-'.$row["section"].'-'.$row["year"].'-form">
   <input type="hidden" name="faculty_1_id" value="'.$fac_1["id"].'">
   <input type="hidden" name="faculty_2_id" value="'.$fac_2["id"].'">
+  <input type="hidden" name="la_id" value="'.$la["id"].'">
   <input type="hidden" name="studentid" value="'.$row["id"].'">
   <input type="hidden" name="section" value="'.$row["section"].'">
   <input type="hidden" name="subject" value="'.$practical[$code].'">
