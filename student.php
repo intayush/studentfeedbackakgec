@@ -59,7 +59,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 		</table>
 					</div>
      </div>';
-		 $sql = "select * from student_theory where student_id = '$row[tid]'";
+		 /*$sql = "select  from student where student_id = '$row[tid]'";
 		 if(!($t=mysqli_query($con,$sql))){
 			 echo mysqli_error($con);
 			 die();
@@ -70,7 +70,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 			 die();
 		 }
 		$theory  = mysqli_fetch_assoc($t);
-		$practical = mysqli_fetch_assoc($p);
+		$practical = mysqli_fetch_assoc($p);*/
 		$i=1;$no_of_theory=0;$no_of_practical=0;
 		$subject=array();
     $subject['name'] = array();
@@ -84,21 +84,21 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
     $stuid = $row['id'];
 			while($i<=7){
 				 $code="f".$i;	//faculty f1 f2 f3....
-				 if($theory[$code]!=null){ //if fac not null
+				 if($row[$code]!=null){ //if fac not null
            $th="t".$i;
-           $check_response = "select * from theory_response where subject='$theory[$th]' and student_id = '$stuid'";
+           $check_response = "select * from theory_response where subject='$row[$th]' and student_id = '$stuid'";
            if(!($cr=mysqli_query($con,$check_response))){
 						 echo mysqli_error($con);
 						 die();
 					 }
            if(mysqli_num_rows($cr)){
              $i++;
-             array_push($subject['name'],$theory[$th]);
+             array_push($subject['name'],$row[$th]);
              array_push($subject['disabled'],true);
              $no_of_theory++;
              continue;
            }
-					 $fac_sql = "select * from faculty where id = '$theory[$code]'"; //get faculty details
+					 $fac_sql = "select * from faculty where faculty_id = '$row[$code]'"; //get faculty details
 					 if(!($fa=mysqli_query($con,$fac_sql))){
 						 echo mysqli_error($con);
 						 die();
@@ -106,7 +106,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 					$fac  = mysqli_fetch_assoc($fa);
 						$no_of_theory++;
 						//array_push($subject,$theory[$th]);
-            array_push($subject['name'],$theory[$th]);
+            array_push($subject['name'],$row[$th]);
             array_push($subject['disabled'],false);
 						array_push($faculty,$fac);
 						$modal_no_theory=$no_of_theory-1;
@@ -138,13 +138,13 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 										Name of faculty:<div class="right">'.ucwords($fac["name"]).'</div>
 									</div>
 									<div class="col s12 m12">
-										Subject Code:<div class="right">'.strtoupper($theory[$th]).'</div>
+										Subject Code:<div class="right">'.strtoupper($row[$th]).'</div>
 									</div>
 									</div>
 
 									<div class="col s6 m6">
 									<div class="col s12 m12">
-									Subject Name:<div class="right">'.strtoupper($theory[$th]).'</div>
+									Subject Name:<div class="right">'.strtoupper($row[$th]).'</div>
 									</div>
 									<div class="col s12 m12">
 									Branch/Year:<div class="right">'.$branch.'&nbsp;'.$row["year"].'</div>
@@ -163,9 +163,9 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 			<div class="col s12 m12"><h5>Part-A</h5></div>
 			<div class="col s12 m12"><blockquote>Please indicate your assessment on a scale of 1 to 5. 5 is the best.</blockquote></div>
 		</div>
-    <form action="theory_response.php" method="post" id="fac-'.$fac["id"].'-sub-'.$theory[$th].'-'.$row["section"].'-'.$row["year"].'-form">
+    <form action="theory_response.php" method="post" id="fac-'.$fac["id"].'-sub-'.$row[$th].'-'.$row["section"].'-'.$row["year"].'-form">
     <input type="hidden" name="facultyid" value="'.$fac["id"].'">
-    <input type="hidden" name="subject" value="'.$theory[$th].'">
+    <input type="hidden" name="subject" value="'.$row[$th].'">
     <input type="hidden" name="year" value="'.$row["year"].'">
     <input type="hidden" name="section" value="'.$row["section"].'">
     <input type="hidden" name="studentid" value="'.$row["id"].'">';
@@ -233,7 +233,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
     echo'
 		</div>
 							<div class="modal-footer">
-								<a id="fac-'.$fac["id"].'-sub-'.$theory[$th].'-'.$row["section"].'-'.$row["year"].'" class="modal-action modal-close waves-effect waves-green btn-flat theory-form-submit" href="#">Submit</a>
+								<a id="fac-'.$fac["id"].'-sub-'.$row[$th].'-'.$row["section"].'-'.$row["year"].'" class="modal-action modal-close waves-effect waves-green btn-flat theory-form-submit" href="#">Submit</a>
 							</div>
               </form>
               </div>
@@ -246,15 +246,15 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 			while($i<=4){
 				 $code="l".$i;	//lab l1 l2 l3....
          $l="l".$i;
-				 if($practical[$code]!=''){ //if lab not null
-           $check_response = "select * from practical_faculty_response where student_id = '$stuid' and subject = '$practical[$code]'";
+				 if($row[$code]!=null){ //if lab not null
+           $check_response = "select * from practical_faculty_response where student_id = '$stuid' and subject = '$row[$code]'";
            if(!($cr=mysqli_query($con,$check_response))){
 						 echo mysqli_error($con);
 						 die();
 					 }
            if(mysqli_num_rows($cr)){
              $i++;
-             array_push($practical_sub['name'],$practical[$l]);
+             array_push($practical_sub['name'],$row[$l]);
              array_push($practical_sub['disabled'],true);
              $no_of_practical++;
              continue;
@@ -262,17 +262,17 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 					 $fac_1_code = "f".$i.'1';
 					 $fac_2_code = "f".$i.'2';
            $la_code = "la".$i;
-					 $fac_1_sql = "select * from faculty where id = '$practical[$fac_1_code]'"; //get faculty 1 details
+					 $fac_1_sql = "select * from faculty where faculty_id = '$row[$fac_1_code]'"; //get faculty 1 details
 					 if(!($fa_1=mysqli_query($con,$fac_1_sql))){
 						 echo mysqli_error($con);
 						 die();
 					 }
 					$fac_1 = mysqli_fetch_assoc($fa_1);
-						array_push($practical_sub,$practical[$l]);
-            array_push($practical_sub['name'],$practical[$l]);
+						array_push($practical_sub,$row[$l]);
+            array_push($practical_sub['name'],$row[$l]);
             array_push($practical_sub['disabled'],false);
 						array_push($practical_fac_1,$fac_1);
-						$fac_2_sql = "select * from faculty where id = '$practical[$fac_2_code]'"; //get faculty 2 details
+						$fac_2_sql = "select * from faculty where faculty_id = '$row[$fac_2_code]'"; //get faculty 2 details
  					 if(!($fa_2=mysqli_query($con,$fac_2_sql))){
  						 echo mysqli_error($con);
  						 die();
@@ -282,7 +282,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
  						array_push($practical_fac_2,$fac_2);
 					$no_of_practical++;
           $modal_no_practical = $no_of_practical-1;
-          $la_sql = "select * from lab_assistant where id='$practical[$la_code]'";
+          $la_sql = "select * from lab_assistant where assistant_id='$row[$la_code]'";
           if(!($la=mysqli_query($con,$la_sql))){
             echo mysqli_error($con);
             die();
@@ -313,7 +313,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
                   Department:<div class="right">'.strtoupper($fac_1["department"]).'</div>
                 </div>
                 <div class="col s12 m12">
-                  Subject Code:<div class="right">'.strtoupper($practical[$code]).'</div>
+                  Subject Code:<div class="right">'.strtoupper($row[$code]).'</div>
                 </div>
                 <div class="col s12 m12">
                 Date:<div class="right">'.$date.'</div>
@@ -322,7 +322,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
 
                 <div class="col s6 m6">
                 <div class="col s12 m12">
-                Subject Name:<div class="right">'.strtoupper($practical[$code]).'</div>
+                Subject Name:<div class="right">'.strtoupper($row[$code]).'</div>
                 </div>
                 <div class="col s12 m12">
                 Branch/Year:<div class="right">'.$branch.'&nbsp;'.$row["year"].'</div>
@@ -344,13 +344,13 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
     <div class="col s12 m12"><h5>Faculty Feedback</h5></div>
     <div class="col s12 m12"><blockquote>Please indicate your assessment on a scale of 1 to 5. 5 is the best.</blockquote></div>
   </div>
-  <form action="practical_response.php" method="post" id="fac1-'.$fac_1["id"].'-fac2-'.$fac_2["id"].'-la-1-sub-'.$theory[$th].'-'.$row["section"].'-'.$row["year"].'-form">
+  <form action="practical_response.php" method="post" id="fac1-'.$fac_1["id"].'-fac2-'.$fac_2["id"].'-la-1-sub-'.$row[$th].'-'.$row["section"].'-'.$row["year"].'-form">
   <input type="hidden" name="faculty_1_id" value="'.$fac_1["id"].'">
   <input type="hidden" name="faculty_2_id" value="'.$fac_2["id"].'">
   <input type="hidden" name="la_id" value="'.$la["id"].'">
   <input type="hidden" name="studentid" value="'.$row["id"].'">
   <input type="hidden" name="section" value="'.$row["section"].'">
-  <input type="hidden" name="subject" value="'.$practical[$code].'">
+  <input type="hidden" name="subject" value="'.$row[$code].'">
   <input type="hidden" name="year" value="'.$row["year"].'">';
  while($disp_ques  = mysqli_fetch_assoc($qu)){
    $disp_question = $disp_ques['question'];
@@ -416,7 +416,7 @@ else if(isset($_SESSION['ses_name']) && isset($_SESSION['ses_rollno'])){
   echo'
   </div>
             <div class="modal-footer">
-              <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat practical-form-submit" id="fac1-'.$fac_1["id"].'-fac2-'.$fac_2["id"].'-la-1-sub-'.$theory[$th].'-'.$row["section"].'-'.$row["year"].'">Agree</a>
+              <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat practical-form-submit" id="fac1-'.$fac_1["id"].'-fac2-'.$fac_2["id"].'-la-1-sub-'.$row[$th].'-'.$row["section"].'-'.$row["year"].'">Agree</a>
             </div>
             </form>
             </div>
